@@ -10,6 +10,8 @@
 #import "JMImageCache.h"
 #import <CoreLocation/CoreLocation.h>
 #import "ECSlidingViewController.h"
+#import "TweetDetailViewController.h"
+
 
 @interface TimelineViewController : UITableViewController<CLLocationManagerDelegate> {
     NSMutableArray *statuses;

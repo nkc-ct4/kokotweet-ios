@@ -258,13 +258,12 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Navigation logic may go here. Create and push another view controller.
-    /*
-     <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
-     // Pass the selected object to the new view controller.
-     [self.navigationController pushViewController:detailViewController animated:YES];
-     */
+
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    TweetDetailViewController *tweetDetail = [self.storyboard instantiateViewControllerWithIdentifier:@"detail"];
+    tweetDetail.array = [statuses objectAtIndex:indexPath.row];
+    [[self navigationController] pushViewController:tweetDetail animated:YES];
+    
 }
 
 - (IBAction)pressTwitter:(id)sender {
@@ -274,18 +273,14 @@
         [self presentModalViewController:composeViewController animated:YES];
     }
 }
+
 - (void) cache:(JMImageCache *)c didDownloadImage:(UIImage *)i forURL:(NSString *)url {
     [self.tableView reloadData];
 }
+
 - (void)locationManager:(CLLocationManager *)manager 
     didUpdateToLocation:(CLLocation *)newLocation 
            fromLocation:(CLLocation *)oldLocation {
-    if(-[newLocation.timestamp timeIntervalSinceNow] > 5.0){//古いデータは使わない  
-        
-        
-    } else {  
-        
-        if(locationUpdateCount == 0){  
             
             //緯度・経度を出力
             CLLocationCoordinate2D coordinate = newLocation.coordinate;
@@ -334,11 +329,6 @@
                     }
                 });
             }];
- 
-        }  
-        locationUpdateCount++;  
-        [locationManager stopUpdatingLocation];  
-    }  
 }
 
 - (void)locationManager:(CLLocationManager*)manager 
