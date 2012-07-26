@@ -11,16 +11,22 @@
 #import <CoreLocation/CoreLocation.h>
 #import "ECSlidingViewController.h"
 #import "TweetDetailViewController.h"
+#import "MenuViewController.h"
+#import <Twitter/Twitter.h>
+#import "SVPullToRefresh.h"
+
+
 
 
 @interface TimelineViewController : UITableViewController<CLLocationManagerDelegate> {
+   //geo持ちのツイート
     NSMutableArray *statuses;
-    NSMutableArray *statuses_ex;
+    //location起動のManager
     CLLocationManager *locationManager;
+    //自分のいる場所
     NSString *geocodeStr;
-    NSUserDefaults *ud;
+    //半径
     NSString *distance;
-    int locationUpdateCount;
 }
 - (IBAction)pressTwitter:(id)sender;
 

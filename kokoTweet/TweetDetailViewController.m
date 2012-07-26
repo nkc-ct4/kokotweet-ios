@@ -29,7 +29,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view.
+
+    
+    /* 起動時に画像をキャッシュしながら表示  */
     imageview.image =  [[JMImageCache sharedCache] imageForURL:[array objectForKey:@"profile_image_url"] delegate:self];
 
     

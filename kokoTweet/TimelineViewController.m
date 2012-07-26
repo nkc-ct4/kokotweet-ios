@@ -16,11 +16,9 @@
 #endif
 
 #import "TimelineViewController.h"
-#import <Accounts/Accounts.h>
-#import <Twitter/Twitter.h>
-#import "SVPullToRefresh.h"
 #import "SettingDialogController.h"
-#import "MenuViewController.h"
+
+
 @interface TimelineViewController ()
 
 @end
@@ -31,7 +29,6 @@
 @synthesize accountNameArray;
 @synthesize loadingView;
 @synthesize indicator;
-
 @synthesize accountIdentifier;
 @synthesize geocodeStr;
 @synthesize distance;
@@ -61,12 +58,15 @@
         return;
     }
     
+    
+    //更新日時
     NSDate* date = [NSDate date];
     self.tableView.showsInfiniteScrolling = NO;
+    //location初期化
     locationManager = [[CLLocationManager alloc] init];
     locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
     locationManager.delegate = self;
-
+    //初期値
     distance = @"10km";
     
     // 位置情報サービスが利用できるかどうかをチェック
@@ -77,7 +77,7 @@
         NSLog(@"Location services not available.");
     }
     
-    //更新
+    //PullToRefresh処理
     [self.tableView addPullToRefreshWithActionHandler:^{
         
         // 位置情報サービスが利用できるかどうかをチェック
@@ -122,6 +122,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
+    //ツイート個数カウント ＋ セル個数確定
     return [statuses count];
 }
 
@@ -134,6 +135,7 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                       reuseIdentifier:CellIdentifier];
     }
+    //resultsにjson形式で入れる
     NSDictionary *results = [statuses objectAtIndex:indexPath.row];
 
     
@@ -142,26 +144,20 @@
     UILabel *postText = (UILabel*)[cell viewWithTag:3];
     UILabel *datalabel = (UILabel *)[cell viewWithTag:4];
 
-    //NSString *name = [status objectForKey:@"text"];
+    
+    //text表示
     NSString *text = [results objectForKey:@"text"];
     [postText setLineBreakMode:UILineBreakModeWordWrap];
     [postText setNumberOfLines:0];
     postText.text = text;
  
-
+    //user名表示
     NSString *name = [results objectForKey:@"from_user"];
     namelabel.text = name;
-    //[namelabel setFont:@"Helvetica-Bold"];
-    //icon
     
+    //画像をcacheしながら表示
     imageview.image = [[JMImageCache sharedCache] imageForURL:[results objectForKey:@"profile_image_url"] delegate:self];
     
-    /*
-    NSURL *image_url = [NSURL URLWithString:[user objectForKey:@"profile_image_url"]];
-    NSData *image_data = [NSData dataWithContentsOfURL:image_url];
-    UIImage *image = [[UIImage alloc] initWithData:image_data];
-    imageview.image = image;
-    */
     
     //string → data変換
     NSDateFormatter *inputDateFormatter = [[NSDateFormatter alloc] init];
@@ -171,25 +167,17 @@
     [inputDateFormatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"en-US"]];
     [inputDateFormatter setDateFormat:@"EEE, dd MMM yyyy HH:mm:ss Z"];
     NSString *intputDateStr = (NSString *)[results objectForKey:@"created_at"];
-   
-    //Fri, 20 Jul 2012 03:55:44 +0000
-    //Fri Jul 20 03:52:10 +0000 2012
-    //EEE MMM dd HH:mm:ss   Z   yyyy
-    
     NSDate *inputDate = [inputDateFormatter dateFromString:intputDateStr];
+   
     //NSDate->NSString
-    
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
     [df setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"JST"]];
     df.dateFormat  = @"yyyy-MM-dd HH:mm";
 
     NSString *date_str = [df stringFromDate:inputDate];
-    //NSLog(@"date_str %@",date_str);
-    //NSLog(@"date_str:  %@",date_str);
-   
-    //「2011-03-26 16:13:52」がコンソールへ出力される。
+    //日時表示
     datalabel.text = date_str;
-//    NSLog(@"datalabel.text:  %@",datalabel.text);
+
     return cell;
 }
 
@@ -232,6 +220,8 @@
 }
 */
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+  
+    //セルの高さを計算
     NSDictionary *status = [statuses objectAtIndex:indexPath.row];
     //NSString *name = [status objectForKey:@"text"];
     NSString *text = [status objectForKey:@"text"];
@@ -259,6 +249,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
 
+    //ツイート詳細画面へ画面遷移＋データ渡し
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     TweetDetailViewController *tweetDetail = [self.storyboard instantiateViewControllerWithIdentifier:@"detail"];
     tweetDetail.array = [statuses objectAtIndex:indexPath.row];
@@ -266,6 +257,7 @@
     
 }
 
+//tweet処理
 - (IBAction)pressTwitter:(id)sender {
     if([TWTweetComposeViewController canSendTweet]){
         TWTweetComposeViewController *composeViewController = 
@@ -273,64 +265,70 @@
         [self presentModalViewController:composeViewController animated:YES];
     }
 }
-
+//キャッシュ処理
 - (void) cache:(JMImageCache *)c didDownloadImage:(UIImage *)i forURL:(NSString *)url {
     [self.tableView reloadData];
 }
 
+//location取得
 - (void)locationManager:(CLLocationManager *)manager 
     didUpdateToLocation:(CLLocation *)newLocation 
            fromLocation:(CLLocation *)oldLocation {
             
-            //緯度・経度を出力
+            //緯度・経度を取得
             CLLocationCoordinate2D coordinate = newLocation.coordinate;
-            
-            geocodeStr = [NSString stringWithFormat:@"%f,%f", coordinate.latitude, 
-                          coordinate
-                          .longitude];
-            
+                    
+            //nsstring型に緯度経度を整形
+            geocodeStr = [NSString stringWithFormat:@"%f,%f", coordinate.latitude,
+                            coordinate
+                            .longitude];
+                    
+            //location停止
             [locationManager stopUpdatingLocation];
+            
+            //アカウント取得
             ACAccountStore *accountStore = [[ACAccountStore alloc] init];
             ACAccount *account = [accountStore accountWithIdentifier:self.accountIdentifier];
             NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
-            //    [parameters setObject:@"1" forKey:@"include_entities"];
-            
-            /*  urlString=[NSString stringWithFormat:
-             @"NSString* ur=@"http://search.twitter.com/search.json?geocode=%@,1km",urlString];
-             */
+         
             geocodeStr = [NSString stringWithFormat:@"http://search.twitter.com/search.json?geocode=%@,%@",geocodeStr,distance];
-            NSLog(@"geocodeStr %@",geocodeStr);
-            //http://search.twitter.com/search.json?geocode=35.44444,126.888888,10km
-            NSURL *url = [NSURL URLWithString:geocodeStr]; 
+                    NSLog(@"geocodeStr %@",geocodeStr);
+                    //http://search.twitter.com/search.json?geocode=35.44444,126.888888,10km
+                
+            NSURL *url = [NSURL URLWithString:geocodeStr];
+                    
             
             TWRequest *request = [[TWRequest alloc] initWithURL:url
                                                      parameters:parameters
                                                   requestMethod:TWRequestMethodGET];
+            
             [request setAccount:account];
             [request performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error){
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if(!responseData){
-                        NSLog(@"%@", error);
-                    }else{
-                        NSError *error;
-                        NSDictionary *request;
-                        request = [NSJSONSerialization JSONObjectWithData:responseData
-                                                                  options:NSJSONReadingMutableLeaves
-                                                                    error:&error];
-                        statuses = [request objectForKey:@"results"];
-                        
-                        if(statuses){
-                            NSLog(@"%@", statuses);
-                        }else{
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if(!responseData){
                             NSLog(@"%@", error);
-                        }
-                        [self.tableView.pullToRefreshView performSelector:@selector(stopAnimating) withObject:nil];
+                        }else{
+                            NSError *error;
+                            NSDictionary *request;
+                            request = [NSJSONSerialization JSONObjectWithData:responseData
+                                                                options:NSJSONReadingMutableLeaves
+                                                                error:&error];
+            statuses = [request objectForKey:@"results"];
+                        
+                    
+            if(statuses){
+                    NSLog(@"%@", statuses);
+                    }else{
+                        NSLog(@"%@", error);
+                    }
+                            [self.tableView.pullToRefreshView performSelector:@selector(stopAnimating) withObject:nil];
                         [self.tableView reloadData];
                     }
                 });
             }];
 }
 
+//locationerror
 - (void)locationManager:(CLLocationManager*)manager 
        didFailWithError:(NSError*)error {
 }
@@ -453,9 +451,6 @@
         }
         
     }];
-    
-
-
 }
 
 @end

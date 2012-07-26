@@ -11,9 +11,9 @@
 
 
 @interface TweetDetailViewController : UIViewController{
-    NSDictionary *array;
+    NSDictionary *array;//ツイート一件ごとの情報
 }
-@property (weak, nonatomic) IBOutlet UIImageView *imageview;
+@property (weak, nonatomic) IBOutlet UIImageView *imageview;//画像の宣言
 @property (strong,nonatomic) NSDictionary *array;
 
 @end
