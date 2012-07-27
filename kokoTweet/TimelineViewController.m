@@ -41,6 +41,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    [[JMImageCache sharedCache] removeAllObjects];
+    
     //初期設定確認
     self.accountsArray = [[NSMutableArray array]init];
     self.accountNameArray = [[NSMutableArray array]init];
@@ -135,7 +138,7 @@
     NSDictionary *results = [statuses objectAtIndex:indexPath.row];
 
     
-    UIImageView *imageview =(UIImageView *)[cell viewWithTag:1];
+//    UIImageView *imageview =(UIImageView *)[cell viewWithTag:1];
     UILabel *namelabel = (UILabel*)[cell viewWithTag:2];
     UILabel *postText = (UILabel*)[cell viewWithTag:3];
     UILabel *datalabel = (UILabel *)[cell viewWithTag:4];
@@ -152,17 +155,14 @@
     namelabel.text = name;
     
     //画像をcacheしながら表示
-    dispatch_queue_t q_global = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-    dispatch_queue_t q_main = dispatch_get_main_queue();
+
+    // タスク内で使うオブジェクトを初期化
+//    cell.imageView.image = nil;
     
-    cell.imageView.image = nil;
+    cell.imageView.image = [[JMImageCache sharedCache] imageForURL:[results objectForKey:@"profile_image_url"] delegate:cell];
     
-    dispatch_async(q_global, ^{        
-        dispatch_async(q_main, ^{
-           imageview.image = [[JMImageCache sharedCache] imageForURL:[results objectForKey:@"profile_image_url"] delegate:self];
-            [cell layoutSubviews];
-        });
-    });
+//    [cell.imageView.image setImageWithURL:[results objectForKey:@"profile_image_url"] ];
+
     //string → data変換
     NSDateFormatter *inputDateFormatter = [[NSDateFormatter alloc] init];
     
@@ -269,9 +269,9 @@
     }
 }
 //キャッシュ処理
-- (void) cache:(JMImageCache *)c didDownloadImage:(UIImage *)i forURL:(NSString *)url {
-    [self.tableView reloadData];
-}
+//- (void) cache:(JMImageCache *)c didDownloadImage:(UIImage *)i forURL:(NSString *)url {
+//    [self.tableView reloadData];
+//}
 
 //location取得
 - (void)locationManager:(CLLocationManager *)manager 

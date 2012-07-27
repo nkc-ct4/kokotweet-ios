@@ -14,6 +14,7 @@
 		18D5ABB915ABBC870069BAF9 /* JMImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D5ABB815ABBC870069BAF9 /* JMImageCache.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		18D5ABC415ABC8230069BAF9 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 18D5ABC315ABC8230069BAF9 /* icon.png */; };
 		305F374D15C0FC3700B0E40E /* TweetDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 305F374C15C0FC3700B0E40E /* TweetDetailViewController.m */; };
+		308C8A5615C2389400DD82DD /* TweetTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 308C8A5515C2389400DD82DD /* TweetTableViewCell.m */; };
 		F55685D315B91DDB00B633F7 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F55685D215B91DDB00B633F7 /* MapKit.framework */; };
 		F55685D615B91E1300B633F7 /* SettingDialogController.m in Sources */ = {isa = PBXBuildFile; fileRef = F55685D415B91E1300B633F7 /* SettingDialogController.m */; };
 		F5D3A2AA159AA5DE002C1413 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F5D3A2A9159AA5DE002C1413 /* UIKit.framework */; };
@@ -101,6 +102,8 @@
 		18D5ABC315ABC8230069BAF9 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
 		305F374B15C0FC3700B0E40E /* TweetDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TweetDetailViewController.h; sourceTree = "<group>"; };
 		305F374C15C0FC3700B0E40E /* TweetDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TweetDetailViewController.m; sourceTree = "<group>"; };
+		308C8A5415C2389400DD82DD /* TweetTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TweetTableViewCell.h; sourceTree = "<group>"; };
+		308C8A5515C2389400DD82DD /* TweetTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TweetTableViewCell.m; sourceTree = "<group>"; };
 		F55685D215B91DDB00B633F7 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		F55685D415B91E1300B633F7 /* SettingDialogController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingDialogController.m; sourceTree = "<group>"; };
 		F55685D515B91E1300B633F7 /* SettingDialogController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingDialogController.h; sourceTree = "<group>"; };
@@ -333,6 +336,8 @@
 				18CF7EA815A290210088D878 /* SVPullToRefresh */,
 				F5E8083015BCE2DB00705356 /* ECSlidingViewController */,
 				F5D3A2C9159AA60F002C1413 /* MainStoryboard.storyboard */,
+				308C8A5415C2389400DD82DD /* TweetTableViewCell.h */,
+				308C8A5515C2389400DD82DD /* TweetTableViewCell.m */,
 				F5E8083815BCE6DF00705356 /* InitialSlidingViewController.h */,
 				F5E8083915BCE6DF00705356 /* InitialSlidingViewController.m */,
 				F5E8083E15BD0F8000705356 /* NavigationTopViewController.m */,
@@ -633,6 +638,7 @@
 				F5E8083D15BCE8E900705356 /* MenuViewController.m in Sources */,
 				F5E8084015BD0F8000705356 /* NavigationTopViewController.m in Sources */,
 				305F374D15C0FC3700B0E40E /* TweetDetailViewController.m in Sources */,
+				308C8A5615C2389400DD82DD /* TweetTableViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
