@@ -5,15 +5,6 @@
 //  Created by Satou Shingo on 12/05/15.
 //  Copyright (c) 2012年 __MyCompanyName__. All rights reserved.
 //
-#ifdef DEBUG
-#define PrintLog(format, ...)	NSLog((@"[%@:%d]%s " format), [[NSString stringWithCString:__FILE__ encoding:NSUTF8StringEncoding] lastPathComponent], __LINE__, __FUNCTION__, ##__VA_ARGS__)
-#define PrintLogS	NSLog
-#define PrintLogF	printf
-#else
-#define PrintLog(format, ...)
-#define PrintLogS
-#define PrintLogF
-#endif
 
 #import "TimelineViewController.h"
 #import "SettingDialogController.h"
@@ -23,15 +14,20 @@
 
 @end
 
-@implementation TimelineViewController
-
-@synthesize accountsArray;
-@synthesize accountNameArray;
-@synthesize loadingView;
-@synthesize indicator;
-@synthesize accountIdentifier;
-@synthesize geocodeStr;
-@synthesize distance;
+@implementation TimelineViewController{
+    //geo持ちのツイート
+    NSMutableArray *statuses;
+    //location起動のManager
+    CLLocationManager *locationManager;
+    //自分のいる場所
+    NSString *geocodeStr;
+    //半径
+    NSString *distance;
+    //
+    UIView *loadingView;
+    //
+    UIActivityIndicatorView *indicator;
+}
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -60,7 +56,7 @@
     
     
     //更新日時
-    NSDate* date = [NSDate date];
+//    NSDate* date = [NSDate date];
     self.tableView.showsInfiniteScrolling = NO;
     //location初期化
     locationManager = [[CLLocationManager alloc] init];
@@ -74,7 +70,7 @@
         // 測位開始
         [locationManager startUpdatingLocation];
     } else {
-        NSLog(@"Location services not available.");
+        //NSLog(@"Location services not available.");
     }
     
     //PullToRefresh処理
@@ -88,7 +84,7 @@
             // 測位開始
             [locationManager startUpdatingLocation];
         } else {
-            NSLog(@"Location services not available.");
+            //NSLog(@"Location services not available.");
         }
 
     }];
@@ -144,7 +140,7 @@
     UILabel *postText = (UILabel*)[cell viewWithTag:3];
     UILabel *datalabel = (UILabel *)[cell viewWithTag:4];
 
-    
+
     //text表示
     NSString *text = [results objectForKey:@"text"];
     [postText setLineBreakMode:UILineBreakModeWordWrap];
@@ -156,12 +152,19 @@
     namelabel.text = name;
     
     //画像をcacheしながら表示
-    imageview.image = [[JMImageCache sharedCache] imageForURL:[results objectForKey:@"profile_image_url"] delegate:self];
+    dispatch_queue_t q_global = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    dispatch_queue_t q_main = dispatch_get_main_queue();
     
+    cell.imageView.image = nil;
     
+    dispatch_async(q_global, ^{        
+        dispatch_async(q_main, ^{
+           imageview.image = [[JMImageCache sharedCache] imageForURL:[results objectForKey:@"profile_image_url"] delegate:self];
+            [cell layoutSubviews];
+        });
+    });
     //string → data変換
     NSDateFormatter *inputDateFormatter = [[NSDateFormatter alloc] init];
-    NSCalendar *calendar = [[NSCalendar alloc]initWithCalendarIdentifier:NSGregorianCalendar];
     
     //ロケールの設定
     [inputDateFormatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"en-US"]];
@@ -292,7 +295,7 @@
             NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
          
             geocodeStr = [NSString stringWithFormat:@"http://search.twitter.com/search.json?geocode=%@,%@",geocodeStr,distance];
-                    NSLog(@"geocodeStr %@",geocodeStr);
+                    //NSLog(@"geocodeStr %@",geocodeStr);
                     //http://search.twitter.com/search.json?geocode=35.44444,126.888888,10km
                 
             NSURL *url = [NSURL URLWithString:geocodeStr];
@@ -306,7 +309,7 @@
             [request performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error){
                     dispatch_async(dispatch_get_main_queue(), ^{
                         if(!responseData){
-                            NSLog(@"%@", error);
+                            //NSLog(@"%@", error);
                         }else{
                             NSError *error;
                             NSDictionary *request;
@@ -317,9 +320,9 @@
                         
                     
             if(statuses){
-                    NSLog(@"%@", statuses);
+                    //NSLog(@"%@", statuses);
                     }else{
-                        NSLog(@"%@", error);
+                        //NSLog(@"%@", error);
                     }
                             [self.tableView.pullToRefreshView performSelector:@selector(stopAnimating) withObject:nil];
                         [self.tableView reloadData];
@@ -374,7 +377,7 @@
                 [details fetchValueIntoObject:dict];
                 int number = [ [dict valueForKey:@"selectAccountNum"] intValue ];
                 number++;
-                //NSLog( [self.accountsArray objectAtIndex:number] );
+                ////NSLog( [self.accountsArray objectAtIndex:number] );
                 // Do any additional setup after loading the view, typically from a nib.
                 NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
                 int accountNumber = [defaults integerForKey:@"AccountNumber"];
@@ -410,7 +413,7 @@
 */
 
 -(void) modalViewWillClose{
-    NSLog(@"close");
+    //NSLog(@"close");
     [self dismissModalViewControllerAnimated:YES];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     int accountNumber = [defaults integerForKey:@"AccountNumber"];
@@ -419,8 +422,7 @@
     [defaults setObject:self.accountIdentifier forKey:@"AccountIdentifier"];
 
     //設定反映のため起動時と同じ処理を行う
-    
-    NSDate* date = [NSDate date];
+//    NSDate* date = [NSDate date];
     self.tableView.showsInfiniteScrolling = NO;
     locationManager = [[CLLocationManager alloc] init];
     locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
@@ -433,7 +435,7 @@
         // 測位開始
         [locationManager startUpdatingLocation];
     } else {
-        NSLog(@"Location services not available.");
+        //NSLog(@"Location services not available.");
     }
     
     //更新
@@ -447,7 +449,7 @@
             // 測位開始
             [locationManager startUpdatingLocation];
         } else {
-            NSLog(@"Location services not available.");
+            //NSLog(@"Location services not available.");
         }
         
     }];
