@@ -19,9 +19,9 @@
 
 - (void)viewDidLoad
 {
-    [super viewDidLoad];
+    //[super viewDidLoad];
     self.tableView.showsInfiniteScrolling = NO;
-/*
+    
     [self.tableView addPullToRefreshWithActionHandler:^{
         NSLog(@"refresh dataSource");
         //更新処理
@@ -90,6 +90,5 @@
             }
         });
     }];
- */
 }
 @end

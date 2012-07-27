@@ -14,13 +14,29 @@
 #import "MenuViewController.h"
 #import <Twitter/Twitter.h>
 #import "SVPullToRefresh.h"
-#import <Accounts/Accounts.h>
+
+
 
 
 @interface TimelineViewController : UITableViewController<CLLocationManagerDelegate> {
+   //geo持ちのツイート
+    NSMutableArray *statuses;
+    //location起動のManager
+    CLLocationManager *locationManager;
+    //自分のいる場所
+    NSString *geocodeStr;
+    //半径
+    NSString *distance;
 }
 - (IBAction)pressTwitter:(id)sender;
-@property NSString* accountIdentifier;
-@property NSMutableArray* accountNameArray;
-@property NSMutableArray* accountsArray;
+
+@property (copy, nonatomic) NSString *accountIdentifier;
+@property (copy, nonatomic) NSString *geocodeStr;
+@property (nonatomic, retain) CLLocationManager *locationManager;
+@property (copy, nonatomic) NSString *distance;
+@property (strong, nonatomic) NSArray *accountsArray;
+@property (nonatomic, strong) NSMutableArray *accountNameArray;
+@property (nonatomic, retain) UIView *loadingView;
+@property (nonatomic, retain) UIActivityIndicatorView *indicator;
+
 @end

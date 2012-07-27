@@ -13,13 +13,3 @@
     #import <UIKit/UIKit.h>
     #import <Foundation/Foundation.h>
 #endif
-
-#ifdef DEBUG
-#define PrintLog(format, ...)	NSLog((@"[%@:%d]%s " format), [[NSString stringWithCString:__FILE__ encoding:NSUTF8StringEncoding] lastPathComponent], __LINE__, __FUNCTION__, ##__VA_ARGS__)
-#define PrintLogS	NSLog
-#define PrintLogF	printf
-#else
-#define PrintLog(format, ...)
-#define PrintLogS
-#define PrintLogF
-#endif
