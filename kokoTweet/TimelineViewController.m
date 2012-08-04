@@ -61,8 +61,7 @@
     
     
     //更新日時
-    NSDate* date = [NSDate date];
-    self.tableView.showsInfiniteScrolling = NO;
+    //self.tableView.showsInfiniteScrolling = NO;
     //location初期化
     locationManager = [[CLLocationManager alloc] init];
     locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
@@ -129,24 +128,24 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
-    static NSString *CellIdentifier = @"CellviewController";
+    static NSString *CellIdentifier = @"CustomCell";
     CellviewController *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     //  UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
     if(cell == nil){
       //  cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
       //reuseIdentifier:CellIdentifier];
-        
+        for (UIView *subview in [cell.contentView subviews]) {
+            [subview removeFromSuperview];
+        }
         UIViewController* controller;
-        
         // NIB 名は、自作セルを作成した XIB ファイルです。
         controller = [[UIViewController alloc] initWithNibName:@"myviewcontroller" bundle:nil];
-        
         // レイアウトの際に UIViewController の view に関連付けたカスタムセルを取得しています。
         cell = (CellviewController *)controller.view;
         
     }
+    
     //resultsにjson形式で入れる
     NSDictionary *results = [statuses objectAtIndex:indexPath.row];
     /*
@@ -173,12 +172,27 @@
     */
     //画像をcacheしながら表示
    // cell.image.image = [[JMImageCache sharedCache] imageForURL:[results objectForKey:@"profile_image_url"] delegate:self];
-    cell.icon_image.image = [[JMImageCache sharedCache] imageForURL:[results objectForKey:@"profile_image_url"] delegate:self];
+    
+    dispatch_queue_t q_global = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    dispatch_queue_t q_main = dispatch_get_main_queue();
+    
+    cell.icon_image.image = nil;
+    
+    dispatch_async(q_global, ^{
+        UIImage *image = [[JMImageCache sharedCache] imageForURL:[results objectForKey:@"profile_image_url"] delegate:self];       
+        dispatch_async(q_main, ^{
+            cell.icon_image.image = image;
+            [cell layoutSubviews];
+        });
+    });
+    
+    
+    
+    
+    //cell.icon_image.image = [[JMImageCache sharedCache] imageForURL:[results objectForKey:@"profile_image_url"] delegate:self];
     
     //string → data変換
     NSDateFormatter *inputDateFormatter = [[NSDateFormatter alloc] init];
-    NSCalendar *calendar = [[NSCalendar alloc]initWithCalendarIdentifier:NSGregorianCalendar];
-    
     //ロケールの設定
     [inputDateFormatter setLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"en-US"]];
     [inputDateFormatter setDateFormat:@"EEE, dd MMM yyyy HH:mm:ss Z"];
@@ -433,7 +447,6 @@
 
     //設定反映のため起動時と同じ処理を行う
     
-    NSDate* date = [NSDate date];
     self.tableView.showsInfiniteScrolling = NO;
     locationManager = [[CLLocationManager alloc] init];
     locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
