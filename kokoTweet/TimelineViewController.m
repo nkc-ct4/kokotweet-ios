@@ -17,6 +17,7 @@
 
 #import "TimelineViewController.h"
 #import "SettingDialogController.h"
+#import "CellviewController.h"
 
 
 @interface TimelineViewController ()
@@ -128,36 +129,51 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *CellIdentifier = @"TweetCell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    
+    static NSString *CellIdentifier = @"CellviewController";
+    CellviewController *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    //  UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
     if(cell == nil){
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                      reuseIdentifier:CellIdentifier];
+      //  cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+      //reuseIdentifier:CellIdentifier];
+        
+        UIViewController* controller;
+        
+        // NIB 名は、自作セルを作成した XIB ファイルです。
+        controller = [[UIViewController alloc] initWithNibName:@"myviewcontroller" bundle:nil];
+        
+        // レイアウトの際に UIViewController の view に関連付けたカスタムセルを取得しています。
+        cell = (CellviewController *)controller.view;
+        
     }
     //resultsにjson形式で入れる
     NSDictionary *results = [statuses objectAtIndex:indexPath.row];
-
-    
+    /*
     UIImageView *imageview =(UIImageView *)[cell viewWithTag:1];
     UILabel *namelabel = (UILabel*)[cell viewWithTag:2];
     UILabel *postText = (UILabel*)[cell viewWithTag:3];
     UILabel *datalabel = (UILabel *)[cell viewWithTag:4];
+     
 
     
     //text表示
+     */
     NSString *text = [results objectForKey:@"text"];
-    [postText setLineBreakMode:UILineBreakModeWordWrap];
-    [postText setNumberOfLines:0];
-    postText.text = text;
- 
+//    [postText setLineBreakMode:UILineBreakModeWordWrap];
+//    [postText setNumberOfLines:0];
+//    postText.text = text;
+    
+    cell.PostText.text = text;
     //user名表示
     NSString *name = [results objectForKey:@"from_user"];
+    cell.TextLabel.text = name;
+    /*
     namelabel.text = name;
-    
+    */
     //画像をcacheしながら表示
-    imageview.image = [[JMImageCache sharedCache] imageForURL:[results objectForKey:@"profile_image_url"] delegate:self];
-    
+   // cell.image.image = [[JMImageCache sharedCache] imageForURL:[results objectForKey:@"profile_image_url"] delegate:self];
+    cell.icon_image.image = [[JMImageCache sharedCache] imageForURL:[results objectForKey:@"profile_image_url"] delegate:self];
     
     //string → data変換
     NSDateFormatter *inputDateFormatter = [[NSDateFormatter alloc] init];
@@ -176,8 +192,7 @@
 
     NSString *date_str = [df stringFromDate:inputDate];
     //日時表示
-    datalabel.text = date_str;
-
+    cell.date_str.text = date_str;
     return cell;
 }
 
@@ -267,6 +282,7 @@
 }
 //キャッシュ処理
 - (void) cache:(JMImageCache *)c didDownloadImage:(UIImage *)i forURL:(NSString *)url {
+    NSLog(@"cell didDownloadImage");
     [self.tableView reloadData];
 }
 
@@ -342,11 +358,8 @@
     loadingView = [[UIView alloc] initWithFrame:[[self view] bounds]];
     [loadingView setBackgroundColor:[UIColor blackColor]];
     [loadingView setAlpha:0.5];
-    //textlabel = [[UILabel alloc] initWithFrame:CGRectMake(0,0,100,30)];
-    //textlabel.text = @"Twitterアカウントを取得中...";
     indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
     [[self view] addSubview:loadingView];
-    //[loadingView addSubview:textlabel];
     [loadingView addSubview:indicator];
     [indicator setFrame:CGRectMake ((320/2)-20, (480/2)-60, 40, 40)];
     [indicator startAnimating]; 
